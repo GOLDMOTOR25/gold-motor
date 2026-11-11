@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#171717"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="Gold Motor"><link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="icon-192.png">
+<title>Gold Motor | Gestionale</title>
+<style>
+:root{--gold:#c9a34a;--black:#171717;--bg:#f4f4f2;--card:#fff;--muted:#777;--line:#e7e4dc}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);font:14px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;color:#222}
+header{background:linear-gradient(120deg,#151515,#292929);color:white;padding:20px 24px;border-bottom:3px solid var(--gold)}
+.brand{display:flex;align-items:center;justify-content:space-between;gap:12px;max-width:1400px;margin:auto}.brand h1{font-size:22px;letter-spacing:2px;margin:0}.brand small{color:#d7c18e;display:block;letter-spacing:1px;margin-top:3px}
+.wrap{max-width:1400px;margin:auto;padding:18px}.nav{display:flex;gap:8px;overflow:auto;padding:4px 0 14px;position:sticky;top:0;background:var(--bg);z-index:3}
+.nav button,.btn{border:1px solid var(--line);background:#fff;border-radius:9px;padding:10px 13px;white-space:nowrap;cursor:pointer;color:#222;font-weight:600}
+.nav button.active,.btn.primary{background:var(--black);color:#fff;border-color:var(--black)}.btn.gold{background:var(--gold);border-color:var(--gold);color:#171717}.btn.danger{color:#a12626}
+h2{font-size:22px;margin:8px 0 4px}p.sub{color:var(--muted);margin:0 0 18px}
+.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}.card{background:var(--card);border:1px solid var(--line);border-radius:13px;padding:16px;box-shadow:0 2px 8px #00000008}.metric{font-size:25px;font-weight:750;margin-top:8px}.metric-label{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.5px}
+.toolbar{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin:14px 0}.toolbar input{max-width:300px}
+input,select,textarea{font:inherit;border:1px solid #d9d9d4;border-radius:8px;padding:10px;background:#fff;width:100%;min-width:0}
+textarea{min-height:72px;resize:vertical}label{font-size:12px;color:#555;font-weight:650;display:block;margin:0 0 5px}.formgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.field.full{grid-column:1/-1}
+table{border-collapse:collapse;width:100%;background:#fff;border-radius:10px;overflow:hidden}th,td{text-align:left;padding:10px;border-bottom:1px solid var(--line);vertical-align:top}th{background:#292929;color:#fff;font-size:12px}td{font-size:13px}.tablewrap{overflow:auto;border:1px solid var(--line);border-radius:10px}
+.empty{text-align:center;color:var(--muted);padding:30px}.pill{display:inline-block;padding:3px 8px;border-radius:99px;background:#f1ead8;color:#765b1e;font-size:11px;font-weight:700}
+.modal{position:fixed;inset:0;background:#0008;display:none;align-items:center;justify-content:center;padding:16px;z-index:10}.modal.show{display:flex}.modalbox{background:#fff;border-radius:14px;padding:20px;width:min(680px,100%);max-height:90vh;overflow:auto}.modalhead{display:flex;justify-content:space-between;align-items:center;margin-bottom:15px}.modalhead h3{margin:0}.actions{display:flex;gap:6px;flex-wrap:wrap}.tiny{font-size:11px;color:var(--muted)}.notice{background:#fff7df;border:1px solid #ead9a6;padding:12px;border-radius:10px;color:#624d1c;margin:12px 0}
+.hidden{display:none!important}.section{display:none}.section.active{display:block}.footer{color:#888;font-size:11px;padding:22px 2px}
+@media(max-width:850px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:560px){.wrap{padding:12px}.grid{grid-template-columns:1fr 1fr}.formgrid{grid-template-columns:1fr}.brand h1{font-size:18px}.metric{font-size:21px}th,td{padding:8px}}
+</style></head>
+<body>
+<noscript><div style="position:fixed;bottom:0;left:0;right:0;background:#fff3cd;color:#664d03;padding:12px;z-index:2000;font-size:13px">Anteprima non interattiva: apri il file in Safari per usare il gestionale.</div></noscript>
+<header><div class="brand"><div><h1>GOLD MOTOR</h1><small>GESTIONALE AZIENDALE · ARDEA</small></div><div style="text-align:right;color:#d7c18e;font-size:12px">AREA TITOLARE<br>GESTIONE OPERATIVA</div></div></header>
+<div class="wrap">
+<div class="nav" id="nav"></div>
+<div id="dashboard" class="section active">
+<h2>Panoramica aziendale</h2><p class="sub">La situazione della tua attività, in un unico pannello.</p>
+<div class="grid" id="metrics"></div>
+<div class="notice"><b>Nota:</b> questa versione salva i dati nel browser e nel dispositivo in uso. Non è un archivio cloud sincronizzato. Versione di prova senza schermata di accesso. I dati restano solo nel browser di questo dispositivo.</div>
+<div class="card"><b>Metodo di lavoro consigliato</b><ol><li>Registra il cliente prima di aprire una pratica.</li><li>Inserisci ogni documento nella scheda Documenti e annota la categoria.</li><li>Collega veicolo, vendita o lavorazione usando l'ID cliente.</li><li>Registra ogni incasso e pagamento in Cassa.</li><li>Controlla Scadenze e follow-up ogni giorno.</li></ol></div>
+</div>
+<div id="content"></div>
+<div class="footer">Gold Motor Srls · Versione di prova locale senza accesso con password. I dati restano nel browser di questo dispositivo: esporta backup regolari e non inserire documenti personali reali.</div>
+</div>
+<div class="modal" id="modal"><div class="modalbox"><div class="modalhead"><h3 id="modalTitle">Nuovo record</h3><button class="btn" onclick="closeModal()">Chiudi</button></div><form id="recordForm"><div class="formgrid" id="formFields"></div><div class="actions" style="justify-content:flex-end;margin-top:18px"><button type="button" class="btn" onclick="closeModal()">Annulla</button><button class="btn gold" type="submit">Salva scheda</button></div></form></div></div>
+<script>
+const tabs=[
+['dashboard','Panoramica','▦'],['Clienti','Clienti','♙'],['Documenti','Archivio documenti','▤'],['Veicoli','Parco auto','🚘'],['Vendite','Vendite','€'],['Detailing','Detailing','✦'],['Cassa','Entrate / Uscite','◈'],['Scadenze','Scadenze','◷'],['backup','Backup dati','⇩']
+];
+const config={
+Clienti:{title:'Anagrafica clienti',desc:'Una scheda per ogni cliente.',fields:[['id','ID cliente','text',true],['tipo','Tipo cliente','select','Privato|Azienda'],['nome','Nome / Ragione sociale','text',true],['cognome','Cognome','text'],['cf','Codice fiscale / P.IVA','text'],['telefono','Telefono','tel'],['email','Email','email'],['indirizzo','Indirizzo','text'],['citta','Città','text'],['origine','Origine contatto','select','Passaparola|Subito|Instagram|Facebook|TikTok|Altro'],['note','Note','textarea']]},
+Documenti:{title:'Archivio documenti',desc:'Registra il documento e il riferimento al file conservato nella cartella protetta del cliente.',fields:[['id','ID documento','text',true],['cliente','ID cliente','text',true],['categoria','Categoria','select','Documento identità|Contratto di vendita|Fattura|Garanzia|Documenti veicolo|Privacy|Finanziamento|Permuta|Ricevute pagamenti'],['nome','Nome documento','text',true],['data','Data documento','date'],['scadenza','Scadenza','date'],['stato','Stato','select','Da caricare|Caricato|Da verificare|Scaduto|Archiviato'],['percorso','Percorso / riferimento archivio','text'],['note','Note','textarea']]},
+Veicoli:{title:'Parco auto',desc:'Inventario, costi e stato di disponibilità.',fields:[['id','ID veicolo','text',true],['targa','Targa','text'],['marca','Marca','text',true],['modello','Modello','text',true],['versione','Versione','text'],['immatricolazione','Data immatricolazione','date'],['km','Chilometri','number'],['acquisto','Costo acquisto (€)','number'],['preparazione','Costi preparazione (€)','number'],['stato','Stato','select','In stock|In preparazione|In trattativa|Venduto|Non disponibile'],['prezzo','Prezzo richiesto (€)','number'],['provenienza','Fornitore / provenienza','text'],['note','Note','textarea']]},
+Vendite:{title:'Trattative e vendite',desc:'Segui ogni pratica fino alla consegna.',fields:[['id','ID vendita','text',true],['cliente','ID cliente','text',true],['veicolo','ID veicolo','text'],['data','Data trattativa','date'],['prezzo','Prezzo vendita (€)','number'],['sconto','Sconto (€)','number'],['permuta','Valore permuta (€)','number'],['caparra','Caparra (€)','number'],['saldo','Saldo (€)','number'],['consegna','Data consegna','date'],['stato','Stato','select','Nuovo contatto|Appuntamento|Trattativa|Acconto ricevuto|Contratto firmato|Consegnata|Persa|Annullata'],['costo','Costo veicolo + preparazione (€)','number'],['garanzia','Scadenza garanzia','date'],['note','Note','textarea']]},
+Detailing:{title:'Lavorazioni detailing',desc:'Agenda, stato lavorazione, personale e incassi.',fields:[['id','ID lavoro','text',true],['cliente','ID cliente','text'],['targa','Targa','text'],['veicolo','Veicolo','text'],['servizio','Servizio','select','Lavaggio professionale|Lavaggio tappezzeria|Igienizzazione|Lucidatura fari|Lucidatura auto|Pacchetto completo|Altro'],['data','Data prenotazione','date'],['ora','Ora ingresso','time'],['fine','Ora prevista fine','time'],['prezzo','Prezzo (€)','number'],['stato','Stato','select','Da iniziare|In lavorazione|In attesa|Completato|Consegnato|Annullato'],['addetto','Addetto','text'],['ore','Ore impiegate','number'],['prodotti','Costo prodotti (€)','number'],['incasso','Incasso (€)','number'],['note','Note','textarea']]},
+Cassa:{title:'Prima nota gestionale',desc:'Registro interno di entrate e uscite: non sostituisce la contabilità ufficiale.',fields:[['id','ID movimento','text',true],['data','Data','date'],['categoria','Categoria','select','Vendita auto|Detailing|Acconto|Saldo|Prodotti|Affitto|Personale|Assicurazione|Utenze|Manutenzione|Altro'],['descrizione','Descrizione','text',true],['entrata','Entrata (€)','number'],['uscita','Uscita (€)','number'],['metodo','Metodo pagamento','select','Contanti|POS|Bonifico|Assegno|Altro'],['riferimento','Riferimento documento','text'],['note','Note','textarea']]},
+Scadenze:{title:'Scadenze e follow-up',desc:'Promemoria per clienti, consegne, garanzie e attività.',fields:[['id','ID scadenza','text',true],['riferimento','ID cliente / pratica','text'],['tipo','Tipo','select','Richiamo cliente|Consegna|Garanzia|Pagamento|Documento|Appuntamento|Altro'],['descrizione','Descrizione','text',true],['data','Data scadenza','date',true],['responsabile','Responsabile','text'],['priorita','Priorità','select','Bassa|Media|Alta|Urgente'],['stato','Stato','select','Da fare|In corso|Completata|Annullata'],['note','Note','textarea']]}
+};
+let db=JSON.parse(localStorage.getItem('goldmotor_db')||'{}');
+Object.keys(config).forEach(k=>db[k]??=[]);
+let current='dashboard', editing=null;
+function save(){localStorage.setItem('goldmotor_db',JSON.stringify(db));renderDashboard()}
+function nav(){document.getElementById('nav').innerHTML=tabs.map(([id,label,ico])=>`<button class="${current===id?'active':''}" onclick="show('${id}')">${ico} ${label}</button>`).join('')}
+function show(id){current=id;nav();document.getElementById('dashboard').classList.toggle('active',id==='dashboard');document.getElementById('content').innerHTML='';if(id==='backup')renderBackup();else if(id!=='dashboard')renderTable(id);renderDashboard()}
+function renderDashboard(){
+ const sum=(k,f)=>db[k].reduce((s,x)=>s+(Number(x[f])||0),0);
+ const cards=[['Clienti registrati',db.Clienti.length],['Auto in stock',db.Veicoli.filter(x=>x.stato==='In stock').length],['Vendite consegnate',db.Vendite.filter(x=>x.stato==='Consegnata').length],['Lavori detailing aperti',db.Detailing.filter(x=>['Da iniziare','In lavorazione','In attesa'].includes(x.stato)).length],['Entrate registrate',sum('Cassa','entrata').toLocaleString('it-IT',{style:'currency',currency:'EUR'})],['Uscite registrate',sum('Cassa','uscita').toLocaleString('it-IT',{style:'currency',currency:'EUR'})],['Margine vendite stimato',db.Vendite.reduce((s,x)=>s+(Number(x.prezzo)||0)-(Number(x.sconto)||0)-(Number(x.costo)||0),0).toLocaleString('it-IT',{style:'currency',currency:'EUR'})],['Scadenze da gestire',db.Scadenze.filter(x=>x.stato==='Da fare'||x.stato==='In corso').length]];
+ document.getElementById('metrics').innerHTML=cards.map(c=>`<div class="card"><div class="metric-label">${c[0]}</div><div class="metric">${c[1]}</div></div>`).join('');
+}
+function renderTable(key){
+ const c=config[key], rows=db[key];let cols=c.fields.filter(f=>f[0]!=='note').slice(0,7);
+ document.getElementById('content').innerHTML=`<section class="section active"><h2>${c.title}</h2><p class="sub">${c.desc}</p><div class="toolbar"><input id="search" placeholder="Cerca in ${key.toLowerCase()}..." oninput="filterRows()"><button class="btn gold" onclick="openForm('${key}')">＋ Nuova scheda</button></div><div class="tablewrap"><table><thead><tr>${cols.map(f=>`<th>${f[1]}</th>`).join('')}<th>Azioni</th></tr></thead><tbody id="tbody"></tbody></table></div><p class="tiny">${rows.length} record registrati</p></section>`;
+ drawRows(key,cols,rows);
+}
+function drawRows(key,cols,rows){
+ const body=document.getElementById('tbody');if(!rows.length){body.innerHTML=`<tr><td colspan="${cols.length+1}" class="empty">Nessuna scheda presente. Premi “Nuova scheda” per iniziare.</td></tr>`;return}
+ body.innerHTML=rows.map((r)=>`<tr>${cols.map(f=>`<td>${esc(r[f[0]]||'')}</td>`).join('')}<td><div class="actions"><button class="btn" onclick="openForm('${key}','${r._key}')">Apri / modifica</button><button class="btn danger" onclick="removeRow('${key}','${r._key}')">Elimina</button></div></td></tr>`).join('');
+}
+function filterRows(){let q=document.getElementById('search').value.toLowerCase(),key=current,cols=config[key].fields.filter(f=>f[0]!=='note').slice(0,7);drawRows(key,cols,db[key].filter(r=>Object.values(r).join(' ').toLowerCase().includes(q)))}
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function openForm(key,keyid=null){
+ editing=keyid;const rec=db[key].find(x=>x._key===keyid)||{};document.getElementById('modalTitle').textContent=(keyid?'Modifica':'Nuova')+' · '+config[key].title;
+ document.getElementById('formFields').innerHTML=config[key].fields.map(f=>{let [id,label,type,required]=f;let val=rec[id]||'';let el=type==='select'?`<select name="${id}"><option value="">Seleziona...</option>${f[3].split('|').map(o=>`<option ${val===o?'selected':''}>${o}</option>`).join('')}</select>`:type==='textarea'?`<textarea name="${id}">${esc(val)}</textarea>`:`<input name="${id}" type="${type}" value="${esc(val)}" ${required===true?'required':''}>`;return `<div class="field ${type==='textarea'?'full':''}"><label>${label}${required===true?' *':''}</label>${el}</div>`}).join('');
+ document.getElementById('recordForm').onsubmit=e=>{e.preventDefault();let data=Object.fromEntries(new FormData(e.target).entries());if(keyid){let i=db[key].findIndex(x=>x._key===keyid);db[key][i]={...db[key][i],...data}}else db[key].push({...data,_key:(window.crypto && crypto.randomUUID ? crypto.randomUUID() : 'gm-' + Date.now() + '-' + Math.random().toString(16).slice(2))});save();closeModal();renderTable(key)};
+ document.getElementById('modal').classList.add('show');
+}
+function closeModal(){document.getElementById('modal').classList.remove('show')}
+function removeRow(key,id){if(confirm('Vuoi eliminare questa scheda?')){db[key]=db[key].filter(x=>x._key!==id);save();renderTable(key)}}
+function renderBackup(){document.getElementById('content').innerHTML=`<section class="section active"><h2>Backup e ripristino</h2><p class="sub">Esporta una copia dei dati inseriti o ripristina un backup precedente.</p><div class="card"><h3>Esporta dati</h3><p>Scarica un file JSON con le schede registrate in questo browser.</p><button class="btn gold" onclick="exportData()">Scarica backup</button></div><div class="card" style="margin-top:12px"><h3>Ripristina dati</h3><p>Seleziona un backup JSON precedentemente esportato. I dati attuali saranno sostituiti.</p><input type="file" id="restoreFile" accept=".json,application/json"><button class="btn" style="margin-top:10px" onclick="importData()">Ripristina backup</button></div><div class="notice">Il backup contiene dati personali se li hai inseriti: conservalo in un luogo protetto. Non condividere il file con persone non autorizzate.</div></section>`}
+function exportData(){let blob=new Blob([JSON.stringify(db,null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='Gold_Motor_Backup_'+new Date().toISOString().slice(0,10)+'.json';a.click();URL.revokeObjectURL(a.href)}
+function importData(){let f=document.getElementById('restoreFile').files[0];if(!f)return alert('Seleziona prima un file JSON.');let r=new FileReader();r.onload=()=>{try{let d=JSON.parse(r.result);if(!d||typeof d!=='object')throw 0;Object.keys(config).forEach(k=>d[k]??=[]);db=d;save();alert('Backup ripristinato.');show('dashboard')}catch(e){alert('File di backup non valido.')}};r.readAsText(f)}
+nav();renderDashboard();
+
+
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js').catch(() => {}));
+}
+</script></body></html>
