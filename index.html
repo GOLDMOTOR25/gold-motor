@@ -70,5 +70,145 @@ async function removeRow(key,id){if(confirm('Vuoi eliminare questa scheda?')){db
 function renderBackup(){document.getElementById('content').innerHTML=`<section class="section active"><h2>Backup e ripristino</h2><p class="sub">Esporta una copia completa di clienti, pratiche e documenti allegati.</p><div class="card"><h3>Esporta dati e allegati</h3><p>Il backup JSON include anche i file allegati. Salvalo in File/iCloud Drive o su un archivio esterno protetto.</p><button class="btn gold" onclick="exportData()">Scarica backup completo</button></div><div class="card" style="margin-top:12px"><h3>Ripristina dati</h3><p>Il ripristino sostituisce i dati presenti su questo iPhone.</p><input type="file" id="restoreFile" accept=".json,application/json"><button class="btn" style="margin-top:10px" onclick="importData()">Ripristina backup</button></div><div class="notice">Il backup può contenere dati personali e documenti riservati: conservalo in un luogo protetto e non condividerlo con persone non autorizzate.</div></section>`}
 function exportData(){const blob=new Blob([JSON.stringify(db)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='Gold_Motor_Backup_Completo_'+new Date().toISOString().slice(0,10)+'.json';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),30000)}
 async function importData(){const f=document.getElementById('restoreFile').files[0];if(!f)return alert('Seleziona prima un file JSON.');if(!confirm('Il ripristino sostituirà i dati attualmente presenti su questo iPhone. Continuare?'))return;try{const d=JSON.parse(await f.text());if(!d||typeof d!=='object')throw 0;Object.keys(config).forEach(k=>{if(!Array.isArray(d[k]))d[k]=[]});db=d;await save();alert('Backup completo ripristinato.');show('dashboard')}catch(e){alert('File di backup non valido. I dati attuali non sono stati modificati.')}}
+
+const GM_SUPABASE_URL='https://dvmtupycdszqdrbvhgkr.supabase.co';
+const GM_SUPABASE_KEY='sb_publishable_qoYNvQ-rGp1sSsjj5lugAg_0Sp9LZJe';
+
+let gmClient=null,gmUser=null,gmBusy=false,gmChannel=null;
+
+function gmAppVisible(show){
+  document.querySelector('header').style.display=show?'':'none';
+  document.querySelector('.wrap').style.display=show?'':'none';
+  const old=document.getElementById('gmLogin');
+  if(old)old.remove();
+}
+
+function gmLogin(error=''){
+  gmAppVisible(false);
+  const box=document.createElement('div');
+  box.id='gmLogin';
+  box.style='position:fixed;inset:0;background:#171717;display:flex;align-items:center;justify-content:center;padding:22px;z-index:9999;font-family:Arial';
+  box.innerHTML=`
+  <div style="background:white;border-radius:16px;padding:25px;width:100%;max-width:420px">
+  <h2 style="color:#171717">GOLD MOTOR</h2>
+  <p>Gestionale aziendale · Accesso riservato</p>
+  <form id="gmLoginForm">
+  <label>Email</label>
+  <input id="gmEmail" type="email" value="info.goldmotor@gmail.com" required>
+  <label style="margin-top:14px">Password</label>
+  <input id="gmPassword" type="password" autocomplete="current-password" required>
+  <p id="gmError" style="color:#b22"></p>
+  <button style="background:#c9a34a;border:0;border-radius:9px;padding:14px;width:100%;font-weight:bold;margin-top:12px">ACCEDI</button>
+  </form></div>`;
+  document.body.appendChild(box);
+  box.querySelector('#gmError').textContent=error;
+  box.querySelector('#gmLoginForm').onsubmit=async e=>{
+    e.preventDefault();
+    const btn=e.submitter;
+    btn.disabled=true;
+    btn.textContent='ACCESSO...';
+    try{
+      const {data,error}=await gmClient.auth.signInWithPassword({
+        email:document.getElementById('gmEmail').value.trim(),
+        password:document.getElementById('gmPassword').value
+      });
+      if(error)throw error;
+      gmUser=data.user;
+      await gmLoadCloud();
+      gmAppVisible(true);
+      gmRender();
+      gmRealtime();
+    }catch(err){
+      box.querySelector('#gmError').textContent=err.message;
+    }finally{
+      btn.disabled=false;
+      btn.textContent='ACCEDI';
+    }
+  };
+}
+
+async function gmLoadCloud(){
+  const {data,error}=await gmClient.from('gm_records')
+    .select('record_key,data');
+  if(error)throw error;
+  Object.keys(config).forEach(k=>db[k]=[]);
+  (data||[]).forEach(r=>{
+    if(config[r.record_key]&&Array.isArray(r.data))
+      db[r.record_key]=r.data;
+  });
+}
+
+function gmRender(){
+  nav();
+  renderDashboard();
+  if(current==='backup')renderBackup();
+  else if(current!=='dashboard')renderTable(current);
+}
+
+async function save(){
+  if(!gmUser)throw new Error('Accesso cloud non effettuato');
+  gmBusy=true;
+  try{
+    const rows=Object.keys(config).map(k=>({
+  section:k,
+  record_key:k,
+  data:db[k],
+  updated_at:new Date().toISOString(),
+  updated_by:gmUser.id
+}));
+    const {error}=await gmClient.from('gm_records').upsert(rows);
+    if(error)throw error;
+    renderDashboard();
+  }finally{
+    gmBusy=false;
+  }
+}
+
+async function removeRow(key,id){
+  if(!confirm('Vuoi eliminare questa scheda?'))return;
+  db[key]=db[key].filter(x=>x._key!==id);
+  await save();
+  renderTable(key);
+}
+
+function gmRealtime(){
+  if(gmChannel)return;
+  gmChannel=gmClient.channel('gold-motor-sync')
+    .on('postgres_changes',{
+      event:'*',
+      schema:'public',
+      table:'gm_records'
+    },async()=>{
+      if(gmBusy)return;
+      try{
+        await gmLoadCloud();
+        gmRender();
+      }catch(e){
+        console.error('Errore sincronizzazione:',e);
+      }
+    }).subscribe();
+}
+
+async function init(){
+  try{
+    if(!window.supabase)throw new Error('Libreria Supabase non caricata');
+    gmClient=window.supabase.createClient(
+      GM_SUPABASE_URL,GM_SUPABASE_KEY
+    );
+    const {data,error}=await gmClient.auth.getSession();
+    if(error)throw error;
+    if(data.session){
+      gmUser=data.session.user;
+      await gmLoadCloud();
+      gmAppVisible(true);
+      gmRender();
+      gmRealtime();
+    }else{
+      gmLogin();
+    }
+  }catch(e){
+    gmLogin(e.message);
+  }
+}
 nav();renderDashboard();if('serviceWorker'in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));init();
 </script></body></html>
